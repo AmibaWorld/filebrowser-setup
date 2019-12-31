@@ -1,0 +1,26 @@
+[Unit]
+Description=Ffile Browser
+Documentation=https://filebrowser.xyz
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+Restart=on-abnormal
+
+; User and group the process will run as.
+User=fengz
+Group=fengz
+
+WorkingDirectory=/home/fengz/
+
+; Always set "-root" to something safe in case it gets forgotten in the Caddyfile.
+ExecStart=/usr/local/bin/filebrowser -r /home/fengz/Download/
+ExecReload=/bin/kill -USR1 $MAINPID
+
+; Use graceful shutdown with a reasonable timeout
+KillMode=mixed
+KillSignal=SIGQUIT
+TimeoutStopSec=5s
+
+[Install]
+WantedBy=multi-user.target
