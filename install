@@ -1,0 +1,38 @@
+安装命令行：
+curl -fsSL https://filebrowser.xyz/get.sh | bash
+
+config 配置
+
+创建配置数据库：filebrowser -d /etc/filebrowser.db config init
+设置监听地址：filebrowser -d /etc/filebrowser.db config set --address 0.0.0.0
+设置监听端口：filebrowser -d /etc/filebrowser.db config set --port 8088
+设置语言环境：filebrowser -d /etc/filebrowser.db config set --locale zh-cn
+设置日志位置：filebrowser -d /etc/filebrowser.db config set --log /var/log/filebrowser.log
+添加一个用户：filebrowser -d /etc/filebrowser.db users add root password --perm.admin，其中的root和password分别是用户名和密码，根据自己的需求更改
+
+配置File-Browser后台运行
+编辑vi /etc/systemd/system/filebrowser.service
+
+[Unit]
+Description=File Browser
+Documentation=https://filebrowser.xyz
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+Restart=on-abnormal
+
+User=fengz
+Group=fengz
+
+WorkingDirectory=/usr/share/caddy
+
+ExecStart=/usr/local/bin/filebrowser -r /usr/share/caddy/Download/
+ExecReload=/bin/kill -USR1 $MAINPID
+
+KillMode=mixed
+KillSignal=SIGQUIT
+TimeoutStopSec=5s
+
+[Install]
+WantedBy=multi-user.target
