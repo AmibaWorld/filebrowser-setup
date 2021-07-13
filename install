@@ -13,26 +13,25 @@ config 配置
 配置File-Browser后台运行
 编辑vi /etc/systemd/system/filebrowser.service
 
+
+
+零时管理员密码重置/添加:
+
+filebrowser -d /etc/filebrowser/filebrowser.db users update admin -p 123456
+filebrowser -d /etc/filebrowser/filebrowser.db users add root 123456 --perm.admin
+
+10 Systemd
+# vi /etc/systemd/system/filebrowser.service
+
 [Unit]
-Description=File Browser
-Documentation=https://filebrowser.xyz
-After=network-online.target
-Wants=network-online.target systemd-networkd-wait-online.service
+Description=The filebrowser Process Manager
+After=network.target
 
 [Service]
-Restart=on-abnormal
-
-User=fengz
-Group=fengz
-
-WorkingDirectory=/usr/share/caddy
-
-ExecStart=/usr/local/bin/filebrowser -r /usr/share/caddy/Download/
-ExecReload=/bin/kill -USR1 $MAINPID
-
-KillMode=mixed
-KillSignal=SIGQUIT
-TimeoutStopSec=5s
+Type=simple
+ExecStart=/usr/local/bin/filebrowser -c /etc/filebrowser/config.json
+ExecStop=/bin/killall filebrowser
+PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target
